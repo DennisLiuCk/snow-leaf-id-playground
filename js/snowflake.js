@@ -21,6 +21,7 @@ class SnowflakeGenerator {
   static MAX_DATACENTER_ID = (1 << SnowflakeGenerator.DATACENTER_BITS) - 1; // 31
   static MAX_WORKER_ID = (1 << SnowflakeGenerator.WORKER_BITS) - 1; // 31
   static MAX_SEQUENCE = (1 << SnowflakeGenerator.SEQUENCE_BITS) - 1; // 4095
+  static MAX_TIMESTAMP = (1n << BigInt(SnowflakeGenerator.TIMESTAMP_BITS)) - 1n; // 2^41 - 1
 
   // 位移量
   static WORKER_SHIFT = SnowflakeGenerator.SEQUENCE_BITS;
@@ -120,7 +121,7 @@ class SnowflakeGenerator {
     const sequence = Number(bigId & BigInt(SnowflakeGenerator.MAX_SEQUENCE));
     const workerId = Number((bigId >> BigInt(SnowflakeGenerator.WORKER_SHIFT)) & BigInt(SnowflakeGenerator.MAX_WORKER_ID));
     const datacenterId = Number((bigId >> BigInt(SnowflakeGenerator.DATACENTER_SHIFT)) & BigInt(SnowflakeGenerator.MAX_DATACENTER_ID));
-    const timestamp = Number(bigId >> BigInt(SnowflakeGenerator.TIMESTAMP_SHIFT));
+    const timestamp = Number((bigId >> BigInt(SnowflakeGenerator.TIMESTAMP_SHIFT)) & SnowflakeGenerator.MAX_TIMESTAMP);
 
     return {
       timestamp: timestamp,
