@@ -1,9 +1,11 @@
-# Snow Leaf ID Playground ❄️🍃
+# Snow Leaf ID Playground
 
 > 互動學習 Snowflake 與 Leaf-Segment 分散式 ID 生成算法
 
-[![Deploy to GitHub Pages](https://github.com/YOUR_USERNAME/snow-leaf-id-playground/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/snow-leaf-id-playground/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/DennisLiuCk/snow-leaf-id-playground/actions/workflows/deploy.yml/badge.svg)](https://github.com/DennisLiuCk/snow-leaf-id-playground/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Live Demo**: [https://dennisliuck.github.io/snow-leaf-id-playground](https://dennisliuck.github.io/snow-leaf-id-playground)
 
 ## 簡介
 
@@ -15,21 +17,21 @@ Snow Leaf ID Playground 是一個教育性質的互動式單頁網站，幫助�
 ## 功能特色
 
 ### Snowflake 模組
-- 📊 64-bit 位元結構視覺化
-- 🔧 互動式參數調整（Epoch、Datacenter ID、Worker ID、Sequence）
-- 🔄 即時 ID 生成與解析
-- 📋 批量生成功能
+- 64-bit 位元結構視覺化
+- 互動式參數調整（Epoch、Datacenter ID、Worker ID、Sequence）
+- 即時 ID 生成與解析
+- 批量生成功能
 
 ### Leaf-Segment 模組
-- 🗄️ 資料庫表結構展示
-- 🔀 雙 Buffer 機制動態視覺化
-- ⚡ 高併發模擬
-- 💥 資料庫故障模擬
+- 資料庫表結構展示
+- 雙 Buffer 機制動態視覺化
+- 高併發模擬
+- 資料庫故障模擬
 
 ### 比較與決策
-- 📈 詳細的算法比較表
-- 🌳 互動式決策樹
-- 📝 多語言實作範例（Java、Python、JavaScript）
+- 詳細的算法比較表
+- 互動式決策樹
+- 多語言實作範例（Java、Python、JavaScript）
 
 ## 技術棧
 
@@ -44,7 +46,7 @@ Snow Leaf ID Playground 是一個教育性質的互動式單頁網站，幫助�
 
 ```bash
 # Clone 專案
-git clone https://github.com/YOUR_USERNAME/snow-leaf-id-playground.git
+git clone https://github.com/DennisLiuCk/snow-leaf-id-playground.git
 cd snow-leaf-id-playground
 
 # 使用任意 HTTP 伺服器啟動
@@ -150,7 +152,3 @@ Leaf-Segment 採用預分配號段的方式：
 ## 貢獻
 
 歡迎提交 Issue 和 Pull Request！
-
----
-
-Made with ❤️ for the developer community
