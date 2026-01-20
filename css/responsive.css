@@ -1,0 +1,325 @@
+/* 響應式樣式 */
+
+/* 平板裝置 (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  :root {
+    --container-padding: var(--spacing-md);
+  }
+
+  .hero-title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .section-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .bit-structure {
+    flex-wrap: wrap;
+  }
+
+  .bit-section {
+    min-width: 100%;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .comparison-table {
+    font-size: var(--font-size-sm);
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: var(--spacing-sm);
+  }
+
+  .generator-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .buffer-visualization {
+    flex-direction: column;
+  }
+
+  .buffer-container {
+    width: 100%;
+  }
+}
+
+/* 行動裝置 (< 768px) */
+@media screen and (max-width: 767px) {
+  :root {
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+  }
+
+  /* Header */
+  .header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .nav {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    z-index: var(--z-fixed);
+  }
+
+  .nav.is-open {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  /* Hero Section */
+  .hero {
+    padding: var(--spacing-xl) var(--spacing-md);
+    min-height: 80vh;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  /* Sections */
+  .section {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+
+  .section-title {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Cards */
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  /* Bit Visualization */
+  .bit-structure {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .bit-section {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .bit-cell {
+    width: 8px;
+    height: 16px;
+    font-size: 8px;
+  }
+
+  /* Generator Controls */
+  .control-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-label {
+    width: 100%;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .control-input {
+    width: 100%;
+  }
+
+  /* Output Display */
+  .id-output {
+    font-size: var(--font-size-lg);
+    word-break: break-all;
+  }
+
+  .binary-output {
+    font-size: var(--font-size-xs);
+    overflow-x: auto;
+  }
+
+  /* Buffer Visualization */
+  .buffer-visualization {
+    gap: var(--spacing-md);
+  }
+
+  .buffer-container {
+    padding: var(--spacing-md);
+  }
+
+  /* Comparison Table */
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .comparison-table {
+    font-size: var(--font-size-xs);
+    min-width: 600px;
+  }
+
+  /* Code Examples */
+  .code-tabs {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .code-tab {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .code-block {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-md);
+  }
+
+  /* Decision Tree */
+  .decision-tree {
+    padding: var(--spacing-md);
+  }
+
+  .decision-node {
+    padding: var(--spacing-md);
+  }
+
+  .decision-options {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  /* Buttons */
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-group {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  /* Footer */
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
+}
+
+/* 小型行動裝置 (< 480px) */
+@media screen and (max-width: 479px) {
+  .hero-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .bit-cell {
+    width: 6px;
+    height: 14px;
+    font-size: 6px;
+  }
+
+  .control-group input[type="number"] {
+    font-size: var(--font-size-base); /* 防止 iOS 縮放 */
+  }
+}
+
+/* 大螢幕 (> 1400px) */
+@media screen and (min-width: 1400px) {
+  :root {
+    --container-max-width: 1400px;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-5xl);
+  }
+
+  .bit-cell {
+    width: 16px;
+    height: 32px;
+  }
+}
+
+/* 列印樣式 */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .header,
+  .footer,
+  .btn,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .section {
+    page-break-inside: avoid;
+  }
+
+  .card {
+    border: 1px solid #ccc;
+  }
+}
+
+/* 高對比度模式 */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #666;
+    --color-text-secondary: #aaa;
+  }
+
+  .btn-primary {
+    border: 2px solid currentColor;
+  }
+
+  .card {
+    border-width: 2px;
+  }
+}
+
+/* 深色模式偏好（已預設為深色主題，此處為覆蓋用） */
+@media (prefers-color-scheme: light) {
+  /* 如果需要支援淺色模式，可在此處添加 */
+  /* 目前設計為僅深色主題 */
+}

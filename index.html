@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="互動學習 Snowflake 與 Leaf-Segment 分散式 ID 生成算法">
+  <meta name="keywords" content="Snowflake, Leaf-Segment, 分散式ID, distributed ID, 雪花算法">
+  <meta name="author" content="Snow Leaf ID Playground">
+
+  <title>Snow Leaf ID Playground - 分散式 ID 生成算法互動學習</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <a href="#" class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span>Snow Leaf ID</span>
+      </a>
+
+      <nav class="nav">
+        <a href="#snowflake" class="nav-link">Snowflake</a>
+        <a href="#leaf-segment" class="nav-link">Leaf-Segment</a>
+        <a href="#comparison" class="nav-link">比較</a>
+        <a href="https://github.com" class="nav-link nav-link--external" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+
+      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Snow Leaf ID Playground</h1>
+      <p class="hero-subtitle">互動學習 Snowflake 與 Leaf-Segment 分散式 ID 生成算法</p>
+      <div class="btn-group flex-center">
+        <a href="#why-distributed-id" class="btn btn-primary btn-lg">開始探索</a>
+        <a href="#comparison" class="btn btn-secondary btn-lg">快速比較</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: 為什麼需要分散式 ID -->
+  <section id="why-distributed-id" class="section">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">為什麼需要分散式 ID？</h2>
+        <p class="section-subtitle">在分散式系統中，傳統的自增 ID 面臨諸多挑戰</p>
+      </div>
+
+      <div class="card-grid">
+        <div class="card scroll-animate">
+          <div class="card-header">
+            <div class="card-icon" style="color: var(--color-accent-red);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h3 class="card-title">傳統自增 ID 的問題</h3>
+          </div>
+          <div class="card-content">
+            <ul class="problem-list">
+              <li>單點故障風險 - 依賴單一資料庫</li>
+              <li>效能瓶頸 - 無法水平擴展</li>
+              <li>分庫分表困難 - ID 可能重複</li>
+              <li>安全性問題 - 易被猜測遍歷</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card scroll-animate delay-100">
+          <div class="card-header">
+            <div class="card-icon" style="color: var(--color-accent-green);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h3 class="card-title">分散式 ID 的需求</h3>
+          </div>
+          <div class="card-content">
+            <ul class="feature-list">
+              <li>全局唯一性 - 跨機器不重複</li>
+              <li>趨勢遞增 - 利於 B+ Tree 索引</li>
+              <li>高可用性 - 無單點故障</li>
+              <li>高效能 - 支援高併發場景</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card scroll-animate delay-200">
+          <div class="card-header">
+            <div class="card-icon" style="color: var(--color-accent-cyan);">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+            </div>
+            <h3 class="card-title">主流解決方案</h3>
+          </div>
+          <div class="card-content">
+            <p><strong class="text-cyan">Snowflake</strong> - Twitter 開源的 64-bit ID 算法，基於時間戳記，無需外部依賴。</p>
+            <p class="mt-md"><strong class="text-orange">Leaf-Segment</strong> - 美團開源的號段模式，基於資料庫預分配，ID 連續遞增。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Snowflake 算法 -->
+  <section id="snowflake" class="section">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">Snowflake 算法</h2>
+        <p class="section-subtitle">Twitter 於 2010 年開源的 64-bit 分散式 ID 生成算法</p>
+      </div>
+
+      <!-- 原理說明 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">算法原理</h3>
+        <div class="card-content">
+          <p>Snowflake 將 64-bit 整數劃分為多個區塊，透過時間戳記、機器識別碼和序列號的組合，確保每個 ID 的唯一性。每秒可生成約 <strong class="text-cyan">409.6 萬</strong> 個 ID（單機）。</p>
+
+          <div class="info-box mt-lg">
+            <strong>核心特點：</strong>
+            <ul class="mt-sm">
+              <li>無需中央協調器，本地生成</li>
+              <li>時間戳記確保趨勢遞增</li>
+              <li>機器 ID 確保分散式唯一性</li>
+              <li>序列號確保同毫秒內唯一性</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 位元結構視覺化 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">64-bit 位元結構</h3>
+        <p class="text-muted mb-lg">點擊各區塊查看詳細說明</p>
+
+        <div id="snowflake-bit-visualizer"></div>
+
+        <div id="snowflake-section-info" class="info-box mt-lg" style="display: none;"></div>
+      </div>
+
+      <!-- 互動式 ID 生成器 -->
+      <div class="card scroll-animate">
+        <h3 class="card-title mb-md">互動式 ID 生成器</h3>
+
+        <div class="generator-controls mb-lg">
+          <div class="control-group">
+            <label class="control-label" for="snowflake-epoch">
+              Epoch (時間基準點)
+              <span class="tooltip-trigger" data-tooltip="所有時間戳記的起始參考點">?</span>
+            </label>
+            <input type="datetime-local" id="snowflake-epoch" class="form-input">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="snowflake-datacenter">
+              Datacenter ID (0-31)
+              <span class="tooltip-trigger" data-tooltip="資料中心編號，5 bits">?</span>
+            </label>
+            <input type="number" id="snowflake-datacenter" class="form-input" min="0" max="31" value="1">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="snowflake-worker">
+              Worker ID (0-31)
+              <span class="tooltip-trigger" data-tooltip="機器編號，5 bits">?</span>
+            </label>
+            <input type="number" id="snowflake-worker" class="form-input" min="0" max="31" value="1">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="snowflake-sequence">
+              Sequence (0-4095)
+              <span class="tooltip-trigger" data-tooltip="同毫秒內的序列號，12 bits">?</span>
+            </label>
+            <input type="number" id="snowflake-sequence" class="form-input" min="0" max="4095" value="0">
+          </div>
+        </div>
+
+        <div class="btn-group mb-lg">
+          <button id="snowflake-generate-btn" class="btn btn-primary">生成 ID</button>
+          <button id="snowflake-copy-btn" class="btn btn-secondary">複製</button>
+        </div>
+
+        <div class="id-output-container">
+          <div class="id-output-label">生成的 ID</div>
+          <div id="snowflake-id-output" class="id-output">-</div>
+        </div>
+
+        <!-- ID 解析 -->
+        <div class="mt-xl">
+          <h4 class="mb-md">ID 解析</h4>
+          <div class="flex gap-md mb-md" style="flex-wrap: wrap;">
+            <input type="text" id="snowflake-parse-input" class="form-input" placeholder="輸入要解析的 ID" style="flex: 1; min-width: 200px;">
+            <button id="snowflake-parse-btn" class="btn btn-secondary">解析</button>
+          </div>
+          <div id="snowflake-parse-result" class="info-box">
+            <p class="text-muted">輸入 ID 後點擊解析按鈕</p>
+          </div>
+        </div>
+
+        <!-- 批量生成 -->
+        <div class="mt-xl">
+          <h4 class="mb-md">批量生成</h4>
+          <div class="flex gap-md mb-md" style="flex-wrap: wrap;">
+            <input type="number" id="snowflake-batch-count" class="form-input" value="10" min="1" max="100" style="width: 100px;">
+            <button id="snowflake-batch-btn" class="btn btn-secondary">批量生成</button>
+          </div>
+          <div id="snowflake-batch-output" class="info-box" style="max-height: 200px; overflow-y: auto; font-family: var(--font-mono); font-size: var(--font-size-sm);">
+            <p class="text-muted">點擊批量生成按鈕</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Leaf-Segment 算法 -->
+  <section id="leaf-segment" class="section">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">Leaf-Segment 算法</h2>
+        <p class="section-subtitle">美團開源的基於號段模式的分散式 ID 解決方案</p>
+      </div>
+
+      <!-- 原理說明 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">算法原理</h3>
+        <div class="card-content">
+          <p>Leaf-Segment 採用預分配號段的方式，每次從資料庫獲取一個號段（例如 1-1000），在記憶體中遞增分配。搭配雙 Buffer 機制，確保高可用性。</p>
+
+          <div class="info-box mt-lg">
+            <strong>核心特點：</strong>
+            <ul class="mt-sm">
+              <li>ID 完全連續遞增</li>
+              <li>雙 Buffer 確保無阻塞</li>
+              <li>支援多業務標籤隔離</li>
+              <li>資料庫故障時仍可短暫服務</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 資料庫表結構 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">資料庫表結構</h3>
+        <div id="leaf-db-visualizer"></div>
+      </div>
+
+      <!-- 雙 Buffer 視覺化 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">雙 Buffer 機制</h3>
+        <p class="text-muted mb-lg">當 Buffer 1 使用到閾值時，會自動預載入 Buffer 2</p>
+        <div id="leaf-buffer-visualizer"></div>
+      </div>
+
+      <!-- 互動式模擬器 -->
+      <div class="card scroll-animate">
+        <h3 class="card-title mb-md">互動式模擬器</h3>
+
+        <div class="generator-controls mb-lg">
+          <div class="control-group">
+            <label class="control-label" for="leaf-biztag">
+              Business Tag
+              <span class="tooltip-trigger" data-tooltip="業務標籤，用於區分不同業務的 ID 序列">?</span>
+            </label>
+            <input type="text" id="leaf-biztag" class="form-input" value="order">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="leaf-step">
+              Step (100-10000)
+              <span class="tooltip-trigger" data-tooltip="每次從資料庫獲取的號段大小">?</span>
+            </label>
+            <input type="number" id="leaf-step" class="form-input" min="100" max="10000" value="1000">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="leaf-threshold">
+              預載入閾值: <span id="leaf-threshold-value">20%</span>
+              <span class="tooltip-trigger" data-tooltip="當剩餘 ID 低於此比例時觸發預載入">?</span>
+            </label>
+            <input type="range" id="leaf-threshold" class="range-slider" min="10" max="50" value="20">
+          </div>
+        </div>
+
+        <div class="btn-group mb-lg flex-wrap">
+          <button id="leaf-init-btn" class="btn btn-primary">初始化</button>
+          <button id="leaf-getid-btn" class="btn btn-secondary">獲取 ID</button>
+          <button id="leaf-burst-btn" class="btn btn-secondary">高併發模擬</button>
+          <button id="leaf-failure-btn" class="btn btn-ghost" style="color: var(--color-accent-orange);">模擬 DB 故障</button>
+          <button id="leaf-reset-btn" class="btn btn-ghost">重置</button>
+        </div>
+
+        <div class="flex gap-md mb-md" style="flex-wrap: wrap;">
+          <label class="control-label">併發數量:</label>
+          <input type="number" id="leaf-burst-count" class="form-input" value="100" min="10" max="1000" style="width: 100px;">
+        </div>
+
+        <div class="id-output-container">
+          <div class="id-output-label">當前 ID</div>
+          <div id="leaf-id-output" class="id-output">-</div>
+        </div>
+
+        <!-- 統計資訊 -->
+        <div id="leaf-stats" class="info-box mt-lg">
+          <p class="text-muted">點擊初始化按鈕開始模擬</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: 算法比較 -->
+  <section id="comparison" class="section">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">算法比較與選擇指南</h2>
+        <p class="section-subtitle">根據您的場景需求選擇最適合的方案</p>
+      </div>
+
+      <!-- 比較表格 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">詳細比較</h3>
+        <div class="comparison-table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th class="highlight-cyan">Snowflake</th>
+                <th class="highlight-orange">Leaf-Segment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ID 長度</td>
+                <td>64-bit (Long)</td>
+                <td>可配置 (通常 64-bit)</td>
+              </tr>
+              <tr>
+                <td>外部依賴</td>
+                <td class="highlight-cyan">無（純演算法）</td>
+                <td>資料庫</td>
+              </tr>
+              <tr>
+                <td>時鐘依賴</td>
+                <td>是（需處理回撥）</td>
+                <td class="highlight-orange">否</td>
+              </tr>
+              <tr>
+                <td>ID 遞增特性</td>
+                <td>趨勢遞增（同機器內）</td>
+                <td class="highlight-orange">完全連續遞增</td>
+              </tr>
+              <tr>
+                <td>可讀性</td>
+                <td>低（二進位編碼）</td>
+                <td class="highlight-orange">高（純數字）</td>
+              </tr>
+              <tr>
+                <td>效能</td>
+                <td class="highlight-cyan">極高（本地生成）</td>
+                <td>高（有網路開銷）</td>
+              </tr>
+              <tr>
+                <td>運維複雜度</td>
+                <td class="highlight-cyan">低</td>
+                <td>中（需維護 DB）</td>
+              </tr>
+              <tr>
+                <td>容錯能力</td>
+                <td class="highlight-cyan">高（無單點）</td>
+                <td>中（依賴 DB）</td>
+              </tr>
+              <tr>
+                <td>每秒生成量（單機）</td>
+                <td class="highlight-cyan">~409 萬</td>
+                <td>取決於號段大小</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 決策樹 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">選擇決策樹</h3>
+        <p class="text-muted mb-lg">回答幾個簡單問題，找到最適合您的方案</p>
+        <div id="decision-tree" class="decision-tree"></div>
+      </div>
+
+      <!-- 適用場景 -->
+      <div class="card-grid">
+        <div class="card scroll-animate">
+          <div class="card-header">
+            <div class="card-icon" style="color: var(--color-accent-cyan);">❄️</div>
+            <h3 class="card-title">Snowflake 適用場景</h3>
+          </div>
+          <div class="card-content">
+            <ul class="feature-list">
+              <li>高併發、低延遲要求</li>
+              <li>無法依賴外部服務</li>
+              <li>分散式微服務架構</li>
+              <li>ID 不需要連續</li>
+              <li>需要從 ID 反解時間資訊</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card scroll-animate delay-100">
+          <div class="card-header">
+            <div class="card-icon" style="color: var(--color-accent-orange);">🍃</div>
+            <h3 class="card-title">Leaf-Segment 適用場景</h3>
+          </div>
+          <div class="card-content">
+            <ul class="feature-list">
+              <li>需要連續遞增的 ID</li>
+              <li>有現成的資料庫基礎設施</li>
+              <li>需要高可讀性的 ID</li>
+              <li>多業務需要隔離的 ID 序列</li>
+              <li>對時鐘同步有顧慮</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: 實作建議 -->
+  <section id="implementation" class="section">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">實作建議與延伸閱讀</h2>
+        <p class="section-subtitle">開始在您的專案中實作分散式 ID</p>
+      </div>
+
+      <!-- 程式碼範例 -->
+      <div class="card scroll-animate mb-xl">
+        <h3 class="card-title mb-md">Snowflake 實作範例</h3>
+
+        <div class="code-example">
+          <div class="code-tabs">
+            <button class="code-tab active" data-tab="code-java">Java</button>
+            <button class="code-tab" data-tab="code-python">Python</button>
+            <button class="code-tab" data-tab="code-js">JavaScript</button>
+          </div>
+
+          <div id="code-java" class="code-content active">
+            <pre class="code-block"><code>public class SnowflakeGenerator {
+    private final long epoch = 1577836800000L; // 2020-01-01
+    private final long datacenterIdBits = 5L;
+    private final long workerIdBits = 5L;
+    private final long sequenceBits = 12L;
+
+    private final long maxDatacenterId = ~(-1L << datacenterIdBits);
+    private final long maxWorkerId = ~(-1L << workerIdBits);
+    private final long sequenceMask = ~(-1L << sequenceBits);
+
+    private final long workerIdShift = sequenceBits;
+    private final long datacenterIdShift = sequenceBits + workerIdBits;
+    private final long timestampShift = sequenceBits + workerIdBits + datacenterIdBits;
+
+    private final long datacenterId;
+    private final long workerId;
+    private long sequence = 0L;
+    private long lastTimestamp = -1L;
+
+    public SnowflakeGenerator(long datacenterId, long workerId) {
+        this.datacenterId = datacenterId;
+        this.workerId = workerId;
+    }
+
+    public synchronized long nextId() {
+        long timestamp = System.currentTimeMillis();
+
+        if (timestamp < lastTimestamp) {
+            throw new RuntimeException("Clock moved backwards");
+        }
+
+        if (timestamp == lastTimestamp) {
+            sequence = (sequence + 1) & sequenceMask;
+            if (sequence == 0) {
+                timestamp = waitNextMillis(lastTimestamp);
+            }
+        } else {
+            sequence = 0L;
+        }
+
+        lastTimestamp = timestamp;
+
+        return ((timestamp - epoch) << timestampShift)
+                | (datacenterId << datacenterIdShift)
+                | (workerId << workerIdShift)
+                | sequence;
+    }
+
+    private long waitNextMillis(long lastTimestamp) {
+        long timestamp = System.currentTimeMillis();
+        while (timestamp <= lastTimestamp) {
+            timestamp = System.currentTimeMillis();
+        }
+        return timestamp;
+    }
+}</code></pre>
+          </div>
+
+          <div id="code-python" class="code-content">
+            <pre class="code-block"><code>import time
+import threading
+
+class SnowflakeGenerator:
+    def __init__(self, datacenter_id=1, worker_id=1):
+        self.epoch = 1577836800000  # 2020-01-01
+        self.datacenter_id = datacenter_id
+        self.worker_id = worker_id
+        self.sequence = 0
+        self.last_timestamp = -1
+        self.lock = threading.Lock()
+
+        # Bit lengths
+        self.sequence_bits = 12
+        self.worker_id_bits = 5
+        self.datacenter_id_bits = 5
+
+        # Max values
+        self.max_sequence = (1 << self.sequence_bits) - 1
+
+        # Bit shifts
+        self.worker_id_shift = self.sequence_bits
+        self.datacenter_id_shift = self.sequence_bits + self.worker_id_bits
+        self.timestamp_shift = self.sequence_bits + self.worker_id_bits + self.datacenter_id_bits
+
+    def _current_millis(self):
+        return int(time.time() * 1000)
+
+    def next_id(self):
+        with self.lock:
+            timestamp = self._current_millis()
+
+            if timestamp < self.last_timestamp:
+                raise Exception("Clock moved backwards")
+
+            if timestamp == self.last_timestamp:
+                self.sequence = (self.sequence + 1) & self.max_sequence
+                if self.sequence == 0:
+                    while timestamp <= self.last_timestamp:
+                        timestamp = self._current_millis()
+            else:
+                self.sequence = 0
+
+            self.last_timestamp = timestamp
+
+            return (
+                ((timestamp - self.epoch) << self.timestamp_shift) |
+                (self.datacenter_id << self.datacenter_id_shift) |
+                (self.worker_id << self.worker_id_shift) |
+                self.sequence
+            )
+
+# Usage
+generator = SnowflakeGenerator(datacenter_id=1, worker_id=1)
+new_id = generator.next_id()
+print(f"Generated ID: {new_id}")</code></pre>
+          </div>
+
+          <div id="code-js" class="code-content">
+            <pre class="code-block"><code>class SnowflakeGenerator {
+  constructor(options = {}) {
+    this.epoch = options.epoch || new Date('2020-01-01').getTime();
+    this.datacenterId = BigInt(options.datacenterId || 1);
+    this.workerId = BigInt(options.workerId || 1);
+    this.sequence = 0n;
+    this.lastTimestamp = -1n;
+
+    // Bit lengths
+    this.sequenceBits = 12n;
+    this.workerIdBits = 5n;
+    this.datacenterIdBits = 5n;
+
+    // Max values
+    this.maxSequence = (1n << this.sequenceBits) - 1n;
+
+    // Bit shifts
+    this.workerIdShift = this.sequenceBits;
+    this.datacenterIdShift = this.sequenceBits + this.workerIdBits;
+    this.timestampShift = this.sequenceBits + this.workerIdBits + this.datacenterIdBits;
+  }
+
+  generate() {
+    let timestamp = BigInt(Date.now() - this.epoch);
+
+    if (timestamp < this.lastTimestamp) {
+      throw new Error('Clock moved backwards');
+    }
+
+    if (timestamp === this.lastTimestamp) {
+      this.sequence = (this.sequence + 1n) & this.maxSequence;
+      if (this.sequence === 0n) {
+        while (timestamp <= this.lastTimestamp) {
+          timestamp = BigInt(Date.now() - this.epoch);
+        }
+      }
+    } else {
+      this.sequence = 0n;
+    }
+
+    this.lastTimestamp = timestamp;
+
+    return (
+      (timestamp << this.timestampShift) |
+      (this.datacenterId << this.datacenterIdShift) |
+      (this.workerId << this.workerIdShift) |
+      this.sequence
+    );
+  }
+}
+
+// Usage
+const generator = new SnowflakeGenerator({ datacenterId: 1, workerId: 1 });
+const newId = generator.generate();
+console.log(`Generated ID: ${newId}`);</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 延伸閱讀 -->
+      <div class="card scroll-animate">
+        <h3 class="card-title mb-md">延伸閱讀</h3>
+        <div class="card-content">
+          <ul class="mt-md">
+            <li class="mb-md">
+              <a href="https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake" target="_blank" rel="noopener">
+                Twitter Snowflake 原始公告
+              </a>
+              <span class="text-muted"> - Twitter Engineering Blog</span>
+            </li>
+            <li class="mb-md">
+              <a href="https://tech.meituan.com/2017/04/21/mt-leaf.html" target="_blank" rel="noopener">
+                Leaf - 美團分散式 ID 生成服務
+              </a>
+              <span class="text-muted"> - 美團技術團隊</span>
+            </li>
+            <li class="mb-md">
+              <a href="https://github.com/baidu/uid-generator" target="_blank" rel="noopener">
+                UidGenerator
+              </a>
+              <span class="text-muted"> - 百度開源的 UID 生成器</span>
+            </li>
+            <li class="mb-md">
+              <a href="https://github.com/didi/tinyid" target="_blank" rel="noopener">
+                TinyID
+              </a>
+              <span class="text-muted"> - 滴滴開源的分散式 ID 生成系統</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>Snow Leaf ID Playground</p>
+        <p class="mt-sm text-muted">MIT License</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+        <a href="#" class="footer-link">回到頂部</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/snowflake.js"></script>
+  <script src="js/leaf-segment.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/ui-components.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
