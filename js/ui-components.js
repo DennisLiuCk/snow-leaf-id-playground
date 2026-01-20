@@ -35,6 +35,7 @@ class CopyButton {
       }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      Toast.show('複製失敗', 'error');
     }
   }
 }

@@ -456,6 +456,8 @@ async function getLeafSegmentId() {
       output.classList.add('animate-pulse');
       setTimeout(() => output.classList.remove('animate-pulse'), 500);
     }
+
+    Toast.show('ID 生成成功', 'success');
   } catch (error) {
     Toast.show(error.message, 'error');
   }
@@ -469,26 +471,27 @@ async function burstLeafSegment() {
   const count = countInput ? clamp(safeParseInt(countInput.value, 100), 10, 1000) : 100;
 
   const output = document.getElementById('leaf-id-output');
-  let generated = 0;
 
-  const interval = setInterval(async () => {
+  async function generateNext(generated) {
+    if (generated >= count) {
+      Toast.show(`已生成 ${count} 個 ID`, 'success');
+      return;
+    }
+
     try {
       const result = await AppState.leafSegment.simulator.getNextId();
-      generated++;
 
       if (output) {
         output.textContent = result.id.toLocaleString();
       }
 
-      if (generated >= count) {
-        clearInterval(interval);
-        Toast.show(`已生成 ${count} 個 ID`, 'success');
-      }
+      setTimeout(() => generateNext(generated + 1), 10);
     } catch (error) {
-      clearInterval(interval);
       Toast.show(error.message, 'error');
     }
-  }, 10);
+  }
+
+  generateNext(0);
 }
 
 /**
